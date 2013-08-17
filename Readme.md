@@ -6,6 +6,14 @@
   apps or middleware that will function correctly regardless of which path segment(s)
   they should operate on.
 
+## Installation
+
+```js
+$ npm install koa-mount
+```
+
+## Example
+
 ```js
 
 var mount = require('./');
@@ -55,12 +63,6 @@ Hello
 
 $ GET /world
 World
-```
-
-## Installation
-
-```js
-$ npm install koa-mount
 ```
 
 ## License
