@@ -29,6 +29,9 @@ function mount(path, app) {
     path = '/';
   }
 
+  var name = app.name || 'unnamed';
+  debug('mount %s %s', path, name);
+
   return function(upstream){
     var downstream = app.middleware
       ? compose(app.middleware)(upstream)
@@ -42,7 +45,9 @@ function mount(path, app) {
       
       // strip the path prefix
       this.path = replace(this.path, path);
+      debug('enter %s -> %s', prev, this.path);
       yield downstream;
+      debug('leave %s -> %s', prev, this.path);
  
       // restore prefix downstream
       this.path = prev;
