@@ -3,6 +3,49 @@ var request = require('supertest');
 var mount = require('..');
 var koa = require('koa');
 
+describe('mount(app)', function(){
+  it('should mount at /', function(done){
+    var a = koa();
+    var b = koa();
+
+    a.use(function(next){
+      return function *(){
+        yield next;
+        if ('/hello' == this.path) this.body = 'Hello';
+      }
+    });
+
+    b.use(function(next){
+      return function *(){
+        yield next;
+        if ('/world' == this.path) this.body = 'World';
+      }
+    });
+
+    var app = koa();
+    app.use(mount(a));
+    app.use(mount(b));
+
+    request(app.listen())
+    .get('/')
+    .expect(404)
+    .end(function(err){
+      if (err) return done(err);
+
+      request(app.listen())
+      .get('/hello')
+      .expect('Hello')
+      .end(function(err){
+        if (err) return done(err);
+
+        request(app.listen())
+        .get('/world')
+        .expect('World', done);
+      });
+    });
+  })
+})
+
 describe('mount(path, app)', function(){
   it('should mount the app at the given path', function(done){
     var app = koa();
