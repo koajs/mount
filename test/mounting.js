@@ -5,6 +5,7 @@ var koa = require('koa');
 
 describe('mount(path, app)', function(){
   it('should mount the app at the given path', function(done){
+    var app = koa();
     var a = koa();
     var b = koa();
 
@@ -21,10 +22,6 @@ describe('mount(path, app)', function(){
         this.body = 'World';
       }
     });
-
-    // app
-
-    var app = koa();
 
     app.use(mount('/hello', a));
     app.use(mount('/world', b));
