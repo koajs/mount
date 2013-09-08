@@ -114,6 +114,23 @@ app.use(mount(a));
 app.use(mount(b));
 ```
 
+## Debugging
+
+  Use the __DEBUG__ environement variable to whitelist
+  koa-mount debug output:
+
+```
+$ DEBUG=koa-mount node myapp.js &
+$ GET /foo/bar/baz
+
+  koa-mount enter /foo/bar/baz -> /bar/baz +2s
+  koa-mount enter /bar/baz -> /baz +0ms
+  koa-mount enter /baz -> / +0ms
+  koa-mount leave /baz -> / +1ms
+  koa-mount leave /bar/baz -> /baz +0ms
+  koa-mount leave /foo/bar/baz -> /bar/baz +0ms
+```
+
 ## License
 
   MIT
