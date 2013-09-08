@@ -1,7 +1,7 @@
 
 /**
  * This example illustrates how application
- * "error" events propagate upstream for
+ * errors propagate upstream for
  * centralized logging etc.
  */
 
@@ -27,14 +27,14 @@ b.use(function(next){
 c.use(function(next){
   return function *(){
     yield next;
-    this.socket.emit('error', new Error('tobi has escaped'));
+    throw new Error('tobi escaped!');
   }
 });
 
 a.use(mount(b));
 b.use(mount(c));
 
-// prevent stderr if you want
+// suppress stderr output if you want
 a.outputErrors = false;
 
 // errors will propagate to the upstream app,
@@ -43,9 +43,11 @@ a.outputErrors = false;
 // in mind that it should be used in an unobtrusive way,
 // since most decisions should be made by the parent app.
 
-a.on('error', function(err){
-  console.log('sending error "%s" to alert service', err.message);
-  // do stuff
+a.on('error', function(err, ctx){
+  console.log('%s %s: sending error "%s" to alert service',
+    ctx.method,
+    ctx.path,
+    err.message);
 });
 
 a.listen(3000);
