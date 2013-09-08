@@ -44,4 +44,61 @@ describe('mount(path, app)', function(){
       });
     });
   })
+
+  it('should cascade properly', function(done){
+    var app = koa();
+    var a = koa();
+    var b = koa();
+    var c = koa();
+
+    a.use(function(next){
+      return function *(){
+        yield next;
+        if (!this.body) this.body = 'foo';
+      }
+    });
+
+    b.use(function(next){
+      return function *(){
+        yield next;
+        if (!this.body) this.body = 'bar';
+      }
+    });
+
+    c.use(function(next){
+      return function *(){
+        yield next;
+        this.body = 'baz';
+      }
+    });
+
+    app.use(mount('/foo', a));
+    a.use(mount('/bar', b));
+    b.use(mount('/baz', c));
+
+    request(app.listen())
+    .get('/')
+    .expect(404)
+    .end(function(err){
+      if (err) return done(err);
+      
+      request(app.listen())
+      .get('/foo')
+      .expect('foo')
+      .end(function(err){
+        if (err) return done(err);
+
+        request(app.listen())
+        .get('/foo/bar')
+        .expect('bar')
+        .end(function(err){
+          if (err) return done(err);
+
+          request(app.listen())
+          .get('/foo/bar/baz')
+          .expect('baz', done);
+        });
+      });
+    });
+  })
 })
