@@ -1,10 +1,17 @@
 
+/**
+ * This example illustrates how you may
+ * implement a cascading effect using
+ * several mounted applications that
+ * are not aware of where they are mounted:
+ *
+ * GET /foo
+ * GET /foo/bar
+ * GET /foo/bar/baz
+ */
+
 var mount = require('..');
 var koa = require('koa');
-
-// GET /foo
-// GET /foo/bar
-// GET /foo/bar/baz
 
 var app = koa();
 var a = koa();

@@ -1,4 +1,13 @@
 
+/**
+ * This example illustrates the typical
+ * pattern of mounting an application
+ * to a given pathname prefix.
+ *
+ * GET /hello
+ * GET /world
+ */
+
 var mount = require('./');
 var koa = require('koa');
 
