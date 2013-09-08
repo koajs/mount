@@ -13,10 +13,12 @@ var compose = require('koa-compose');
 module.exports = mount;
 
 /**
- * Mount `app` to `path`.
+ * Mount `app` to `path`, `app`
+ * may be a Koa application or
+ * middleware function.
  *
- * @param {String|Application} path or app
- * @param {Application} [app]
+ * @param {String|Application|Function} path, app, or function
+ * @param {Application|Function} [app or function]
  * @return {Function}
  * @api public
  */
@@ -28,7 +30,9 @@ function mount(path, app) {
   }
 
   return function(upstream){
-    var downstream = compose(app.middleware)(upstream);
+    var downstream = app.middleware
+      ? compose(app.middleware)(upstream)
+      : app(upstream);
  
     return function *(){
       var prev = this.path;

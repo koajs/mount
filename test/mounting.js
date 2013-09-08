@@ -144,4 +144,38 @@ describe('mount(path, app)', function(){
       });
     });
   })
+
+  describe('when middleware is passed', function(){
+    it('should mount', function(done){
+      function hello(next){
+        return function *(){
+          yield next;
+          this.body = 'Hello';
+        }
+      }
+
+      function world(next){
+        return function *(){
+          yield next;
+          this.body = 'World';
+        }
+      }
+
+      var app = koa();
+      
+      app.use(mount('/hello', hello));
+      app.use(mount('/world', world));
+
+      request(app.listen())
+      .get('/hello')
+      .expect('Hello')
+      .end(function(err){
+        if (err) return done(err);
+        
+        request(app.listen())
+        .get('/world')
+        .expect('World', done);
+      });
+    })
+  })
 })
