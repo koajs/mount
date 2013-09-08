@@ -13,7 +13,10 @@
     "index.js"
   ],
   "devDependencies": {
-    "koa": "0.0.1"
+    "koa": "0.0.1",
+    "should": "~1.2.2",
+    "mocha": "~1.12.1",
+    "supertest": "~0.7.1"
   },
   "license": "MIT",
   "dependencies": {
