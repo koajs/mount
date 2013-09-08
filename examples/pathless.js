@@ -26,7 +26,7 @@ var b = koa();
 b.use(function(next){
   return function *(){
     yield next;
-    if ('/world' == this.path) this.body = 'Hello';
+    if ('/world' == this.path) this.body = 'World';
   }
 });
 
