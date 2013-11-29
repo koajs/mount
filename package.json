@@ -2,7 +2,7 @@
   "name": "koa-mount",
   "description": "Mounting middleware for koa",
   "repository": "koajs/mount",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "keywords": [
     "koa",
     "middleware",
@@ -13,7 +13,7 @@
     "index.js"
   ],
   "devDependencies": {
-    "koa": "0.0.2",
+    "koa": "koajs/koa",
     "should": "~1.2.2",
     "mocha": "~1.12.1",
     "supertest": "~0.7.1"
