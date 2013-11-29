@@ -13,14 +13,14 @@
     "index.js"
   ],
   "devDependencies": {
-    "koa": "0.0.1",
+    "koa": "0.0.2",
     "should": "~1.2.2",
     "mocha": "~1.12.1",
     "supertest": "~0.7.1"
   },
   "license": "MIT",
   "dependencies": {
-    "koa-compose": "~1.0.0",
+    "koa-compose": "2.0.0",
     "debug": "*"
   }
 }

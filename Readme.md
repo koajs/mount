@@ -31,22 +31,18 @@ var koa = require('koa');
 
 var a = koa();
 
-a.use(function(next){
-  return function *(){
-    yield next;
-    this.body = 'Hello';
-  }
+a.use(function *(next){
+  yield next;
+  this.body = 'Hello';
 });
 
 // world
 
 var b = koa();
 
-b.use(function(next){
-  return function *(){
-    yield next;
-    this.body = 'World';
-  }
+b.use(function *(next){
+  yield next;
+  this.body = 'World';
 });
 
 // app
@@ -82,18 +78,14 @@ World
 var mount = require('koa-mount');
 var koa = require('koa');
 
-function hello(next){
-  return function *(){
-    yield next;
-    this.body = 'Hello';
-  }
+function *hello(next){
+  yield next;
+  this.body = 'Hello';
 }
 
-function world(next){
-  return function *(){
-    yield next;
-    this.body = 'World';
-  }
+function *world(next){
+  yield next;
+  this.body = 'World';
 }
 
 var app = koa();
