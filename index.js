@@ -34,8 +34,8 @@ function mount(path, app) {
 
   return function(upstream){
     var downstream = app.middleware
-      ? compose(app.middleware)(upstream)
-      : app(upstream);
+      ? compose(app.middleware)
+      : app;
  
     return function *(){
       var prev = this.path;
@@ -46,7 +46,7 @@ function mount(path, app) {
       // strip the path prefix
       this.path = replace(this.path, path);
       debug('enter %s -> %s', prev, this.path);
-      yield downstream;
+      yield downstream.call(this, upstream);
       debug('leave %s -> %s', prev, this.path);
  
       // restore prefix downstream

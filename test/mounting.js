@@ -8,18 +8,14 @@ describe('mount(app)', function(){
     var a = koa();
     var b = koa();
 
-    a.use(function(next){
-      return function *(){
-        yield next;
-        if ('/hello' == this.path) this.body = 'Hello';
-      }
+    a.use(function *(next){
+      yield next;
+      if ('/hello' == this.path) this.body = 'Hello';
     });
 
-    b.use(function(next){
-      return function *(){
-        yield next;
-        if ('/world' == this.path) this.body = 'World';
-      }
+    b.use(function *(next){
+      yield next;
+      if ('/world' == this.path) this.body = 'World';
     });
 
     var app = koa();
@@ -52,18 +48,14 @@ describe('mount(path, app)', function(){
     var a = koa();
     var b = koa();
 
-    a.use(function(next){
-      return function *(){
-        yield next;
-        this.body = 'Hello';
-      }
+    a.use(function *(next){
+      yield next;
+      this.body = 'Hello';
     });
 
-    b.use(function(next){
-      return function *(){
-        yield next;
-        this.body = 'World';
-      }
+    b.use(function *(next){
+      yield next;
+      this.body = 'World';
     });
 
     app.use(mount('/hello', a));
@@ -94,25 +86,19 @@ describe('mount(path, app)', function(){
     var b = koa();
     var c = koa();
 
-    a.use(function(next){
-      return function *(){
-        yield next;
-        if (!this.body) this.body = 'foo';
-      }
+    a.use(function *(next){
+      yield next;
+      if (!this.body) this.body = 'foo';
     });
 
-    b.use(function(next){
-      return function *(){
-        yield next;
-        if (!this.body) this.body = 'bar';
-      }
+    b.use(function *(next){
+      yield next;
+      if (!this.body) this.body = 'bar';
     });
 
-    c.use(function(next){
-      return function *(){
-        yield next;
-        this.body = 'baz';
-      }
+    c.use(function *(next){
+      yield next;
+      this.body = 'baz';
     });
 
     app.use(mount('/foo', a));
@@ -147,18 +133,14 @@ describe('mount(path, app)', function(){
 
   describe('when middleware is passed', function(){
     it('should mount', function(done){
-      function hello(next){
-        return function *(){
-          yield next;
-          this.body = 'Hello';
-        }
+      function *hello(next){
+        yield next;
+        this.body = 'Hello';
       }
 
-      function world(next){
-        return function *(){
-          yield next;
-          this.body = 'World';
-        }
+      function *world(next){
+        yield next;
+        this.body = 'World';
       }
 
       var app = koa();
