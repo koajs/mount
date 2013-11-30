@@ -130,7 +130,53 @@ describe('mount(path, app)', function(){
       });
     });
   })
-
+  
+  it('should restore prefix before going further downstream', function(done){
+    var app = koa();
+    var a = koa();
+    var b = koa();
+    
+    a.use(function *(next){
+      this.body = 'foo';
+      yield next;
+    });
+    
+    b.use(function *(next){
+      this.body = 'bar';
+      yield next;
+    });
+    
+    app.use(mount('/foo', a));
+    app.use(mount('/bar', b));
+    
+    request(app.listen())
+    .get('/foo/bar')
+    .expect('foo', done);
+  })
+  
+  it('should have the correct path', function(done){
+    var app = koa();
+    var a = koa();
+    
+    a.use(function *(next){
+      this.path.should.equal('/');
+      yield next;
+      this.path.should.equal('/');
+    });
+    
+    app.use(function *(next){
+      this.path.should.equal('/foo');
+      yield next;
+      this.path.should.equal('/foo');
+    });
+    
+    app.use(mount('/foo', a));
+    
+    request(app.listen())
+    .get('/foo')
+    .end(done);
+  });
+  
   describe('when middleware is passed', function(){
     it('should mount', function(done){
       function *hello(next){

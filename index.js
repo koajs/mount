@@ -44,12 +44,17 @@ function mount(path, app) {
       if (0 != this.url.indexOf(path)) return yield upstream;
       
       // strip the path prefix
-      this.path = replace(this.path, path);
+      var newPath = replace(this.path, path);
+      this.path = newPath;
       debug('enter %s -> %s', prev, this.path);
-      yield downstream.call(this, upstream);
+      
+      yield downstream.call(this, function *(){
+        this.path = prev;
+        yield upstream;
+        this.path = newPath;
+      }.call(this));
+      
       debug('leave %s -> %s', prev, this.path);
- 
-      // restore prefix downstream
       this.path = prev;
     }
   }
