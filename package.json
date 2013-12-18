@@ -2,7 +2,7 @@
   "name": "koa-mount",
   "description": "Mounting middleware for koa",
   "repository": "koajs/mount",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "keywords": [
     "koa",
     "middleware",

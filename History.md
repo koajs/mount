@@ -1,4 +1,9 @@
 
+1.2.1 / 2013-12-17
+==================
+
+ * restore prefix before going further downstream
+
 1.2.0 / 2013-11-29
 ==================
 
