@@ -32,31 +32,30 @@ function mount(path, app) {
   var name = app.name || 'unnamed';
   debug('mount %s %s', path, name);
 
-  return function(upstream){
+  return function *(upstream){
+    var prev = this.path;
+
+    // compose
     var downstream = app.middleware
       ? compose(app.middleware)
       : app;
- 
-    return function *(){
-      var prev = this.path;
- 
-      // not a match
-      if (0 != this.url.indexOf(path)) return yield upstream;
-      
-      // strip the path prefix
-      var newPath = replace(this.path, path);
-      this.path = newPath;
-      debug('enter %s -> %s', prev, this.path);
-      
-      yield downstream.call(this, function *(){
-        this.path = prev;
-        yield upstream;
-        this.path = newPath;
-      }.call(this));
-      
-      debug('leave %s -> %s', prev, this.path);
+
+    // not a match
+    if (0 != this.url.indexOf(path)) return yield upstream;
+
+    // strip the path prefix
+    var newPath = replace(this.path, path);
+    this.path = newPath;
+    debug('enter %s -> %s', prev, this.path);
+
+    yield downstream.call(this, function *(){
       this.path = prev;
-    }
+      yield upstream;
+      this.path = newPath;
+    }.call(this));
+
+    debug('leave %s -> %s', prev, this.path);
+    this.path = prev;
   }
 }
 
