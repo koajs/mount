@@ -32,13 +32,13 @@ function mount(path, app) {
   var name = app.name || 'unnamed';
   debug('mount %s %s', path, name);
 
+  // compose
+  var downstream = app.middleware
+    ? compose(app.middleware)
+    : app;
+
   return function *(upstream){
     var prev = this.path;
-
-    // compose
-    var downstream = app.middleware
-      ? compose(app.middleware)
-      : app;
 
     // not a match
     if (0 != this.url.indexOf(path)) return yield upstream;
