@@ -20,7 +20,7 @@
   },
   "license": "MIT",
   "dependencies": {
-    "koa-compose": "~2.1.0",
+    "koa-compose": "^2.2.0",
     "debug": "*"
   }
 }
