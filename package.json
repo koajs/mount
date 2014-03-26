@@ -22,5 +22,8 @@
   "dependencies": {
     "koa-compose": "^2.2.0",
     "debug": "*"
+  },
+  "scripts": {
+    "test": "make test"
   }
 }
