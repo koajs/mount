@@ -1,4 +1,10 @@
 
+1.2.4 / 2014-03-25
+==================
+
+ * use `yield* next`
+ * bump deps
+
 1.2.3 / 2014-01-12
 ==================
 
@@ -23,7 +29,7 @@
  * add some debug() calls
  * update to new middleware signature
 
-1.1.0 / 2013-09-08 
+1.1.0 / 2013-09-08
 ==================
 
  * add middleware mounting support
