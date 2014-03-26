@@ -66,7 +66,7 @@ describe('mount(path, app)', function(){
     .expect('Hello')
     .end(function(err){
       if (err) return done(err);
-      
+
       request(app.listen())
       .get('/world')
       .expect('World')
@@ -110,7 +110,7 @@ describe('mount(path, app)', function(){
     .expect(404)
     .end(function(err){
       if (err) return done(err);
-      
+
       request(app.listen())
       .get('/foo')
       .expect('foo')
@@ -130,53 +130,53 @@ describe('mount(path, app)', function(){
       });
     });
   })
-  
+
   it('should restore prefix before going further downstream', function(done){
     var app = koa();
     var a = koa();
     var b = koa();
-    
+
     a.use(function *(next){
       this.body = 'foo';
       yield next;
     });
-    
+
     b.use(function *(next){
       this.body = 'bar';
       yield next;
     });
-    
+
     app.use(mount('/foo', a));
     app.use(mount('/bar', b));
-    
+
     request(app.listen())
     .get('/foo/bar')
     .expect('foo', done);
   })
-  
+
   it('should have the correct path', function(done){
     var app = koa();
     var a = koa();
-    
+
     a.use(function *(next){
       this.path.should.equal('/');
       yield next;
       this.path.should.equal('/');
     });
-    
+
     app.use(function *(next){
       this.path.should.equal('/foo');
       yield next;
       this.path.should.equal('/foo');
     });
-    
+
     app.use(mount('/foo', a));
-    
+
     request(app.listen())
     .get('/foo')
     .end(done);
   });
-  
+
   describe('when middleware is passed', function(){
     it('should mount', function(done){
       function *hello(next){
@@ -190,7 +190,7 @@ describe('mount(path, app)', function(){
       }
 
       var app = koa();
-      
+
       app.use(mount('/hello', hello));
       app.use(mount('/world', world));
 
@@ -199,11 +199,91 @@ describe('mount(path, app)', function(){
       .expect('Hello')
       .end(function(err){
         if (err) return done(err);
-        
+
         request(app.listen())
         .get('/world')
         .expect('World', done);
       });
     })
+  })
+})
+
+describe('mount(/prefix)', function(){
+  var app = koa();
+
+  app.use(mount('/prefix', function* () {
+    this.status = 204;
+  }));
+
+  var server = app.listen();
+
+  it('should not match /kljasdf', function(done){
+    request(server)
+    .get('/kljasdf')
+    .expect(404, done);
+  })
+
+  it('should not match /prefixlaksjdf', function(done){
+    request(server)
+    .get('/prefixlaksjdf')
+    .expect(404, done);
+  })
+
+  it('should match /prefix', function(done){
+    request(server)
+    .get('/prefix')
+    .expect(204, done);
+  })
+
+  it('should match /prefix/', function(done){
+    request(server)
+    .get('/prefix/')
+    .expect(204, done);
+  })
+
+  it('should match /prefix/lkjasdf', function(done){
+    request(server)
+    .get('/prefix/lkjasdf')
+    .expect(204, done);
+  })
+})
+
+describe('mount(/prefix/)', function(){
+  var app = koa();
+
+  app.use(mount('/prefix/', function* () {
+    this.status = 204;
+  }));
+
+  var server = app.listen();
+
+  it('should not match /kljasdf', function(done){
+    request(server)
+    .get('/kljasdf')
+    .expect(404, done);
+  })
+
+  it('should not match /prefixlaksjdf', function(done){
+    request(server)
+    .get('/prefixlaksjdf')
+    .expect(404, done);
+  })
+
+  it('should not match /prefix', function(done){
+    request(server)
+    .get('/prefix')
+    .expect(404, done);
+  })
+
+  it('should match /prefix/', function(done){
+    request(server)
+    .get('/prefix/')
+    .expect(204, done);
+  })
+
+  it('should match /prefix/lkjasdf', function(done){
+    request(server)
+    .get('/prefix/lkjasdf')
+    .expect(204, done);
   })
 })

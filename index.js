@@ -13,38 +13,43 @@ var compose = require('koa-compose');
 module.exports = mount;
 
 /**
- * Mount `app` to `path`, `app`
+ * Mount `app` with `prefix`, `app`
  * may be a Koa application or
  * middleware function.
  *
- * @param {String|Application|Function} path, app, or function
+ * @param {String|Application|Function} prefix, app, or function
  * @param {Application|Function} [app or function]
  * @return {Function}
  * @api public
  */
 
-function mount(path, app) {
-  if ('string' != typeof path) {
-    app = path;
-    path = '/';
+function mount(prefix, app) {
+  if ('string' != typeof prefix) {
+    app = prefix;
+    prefix = '/';
   }
 
-  var name = app.name || 'unnamed';
-  debug('mount %s %s', path, name);
+  if ('/' != prefix[0]) throw new Error('Mounted paths must begin with a /');
 
   // compose
   var downstream = app.middleware
     ? compose(app.middleware)
     : app;
 
+  // don't need to do mounting here
+  if ('/' == prefix) return downstream;
+
+  var trailingSlash = '/' == prefix.slice(-1);
+
+  var name = app.name || 'unnamed';
+  debug('mount %s %s', prefix, name);
+
   return function *(upstream){
     var prev = this.path;
+    var newPath = match(prev);
+    debug('mount %s %s -> %s', prefix, name, newPath);
+    if (!newPath) return yield* upstream;
 
-    // not a match
-    if (0 != this.url.indexOf(path)) return yield* upstream;
-
-    // strip the path prefix
-    var newPath = replace(this.path, path);
     this.path = newPath;
     debug('enter %s -> %s', prev, this.path);
 
@@ -57,19 +62,29 @@ function mount(path, app) {
     debug('leave %s -> %s', prev, this.path);
     this.path = prev;
   }
-}
 
-/**
- * Replace `prefix` in `path`.
- *
- * @param {String} path
- * @param {String} prefix
- * @return {String}
- * @api private
- */
+  /**
+   * Check if `prefix` satisfies a `path`.
+   * Returns the new path.
+   *
+   * match('/images/', '/lkajsldkjf') => false
+   * match('/images', '/images') => /
+   * match('/images/', '/images') => false
+   * match('/images/', '/images/asdf') => /asdf
+   *
+   * @param {String} prefix
+   * @param {String} path
+   * @return {String|Boolean}
+   * @api private
+   */
 
-function replace(path, prefix) {
-  path = path.replace(prefix, '') || '/';
-  if ('/' != path[0]) path = '/' + path;
-  return path;
+  function match(path) {
+    // does not match prefix at all
+    if (0 != path.indexOf(prefix)) return false;
+    var newPath = path.replace(prefix, '') || '/';
+    if (trailingSlash) return newPath;
+    // `/mount` does not match `/mountlkjalskjdf`
+    if ('/' != newPath[0]) return false;
+    return newPath;
+  }
 }
