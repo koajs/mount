@@ -5,6 +5,7 @@
 
 var debug = require('debug')('koa-mount');
 var compose = require('koa-compose');
+var assert = require('assert');
 
 /**
  * Expose `mount()`.
@@ -29,7 +30,7 @@ function mount(prefix, app) {
     prefix = '/';
   }
 
-  if ('/' != prefix[0]) throw new Error('Mounted paths must begin with a /');
+  assert('/' == prefix[0], 'mount path must begin with "/"');
 
   // compose
   var downstream = app.middleware
