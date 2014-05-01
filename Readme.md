@@ -1,4 +1,3 @@
-
 # koa-mount
 
   Mount other Koa applications as middleware. The `path` passed to `mount()` is stripped
@@ -14,7 +13,7 @@ $ npm install koa-mount
 
 ## Examples
 
-  View the [./examples](blob/master/examples) directory for working examples.
+  View the [./examples](examples) directory for working examples.
 
 ### Mounting Applications
 
