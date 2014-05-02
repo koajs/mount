@@ -131,10 +131,11 @@ describe('mount(path, app)', function(){
     });
   })
 
-  it('should restore prefix before going further downstream', function(done){
+  it('should restore prefix for mounted apps', function(done){
     var app = koa();
     var a = koa();
     var b = koa();
+    var c = koa();
 
     a.use(function *(next){
       this.body = 'foo';
@@ -146,12 +147,42 @@ describe('mount(path, app)', function(){
       yield next;
     });
 
+    c.use(function *(next){
+      this.body = 'baz';
+      yield next;
+    });
+
     app.use(mount('/foo', a));
-    app.use(mount('/bar', b));
+    app.use(mount('/foo/bar', b));
+    app.use(mount('/foo/bar/baz', c));
 
     request(app.listen())
     .get('/foo/bar')
-    .expect('foo', done);
+    .expect('bar', done);
+  })
+
+  it('should restore prefix for mounted middleware', function(done){
+    var app = koa();
+    var a = koa();
+
+    app.use(mount('/foo', function *(next){
+      this.body = 'foo';
+      yield next;
+    }));
+
+    app.use(mount('/foo/bar', function *(next){
+      this.body = 'bar';
+      yield next;
+    }));
+
+    app.use(mount('/foo/bar/baz', function *(next){
+      this.body = 'baz';
+      yield next;
+    }));
+
+    request(app.listen())
+    .get('/foo/bar')
+    .expect('bar', done);
   })
 
   it('should have the correct path', function(done){
