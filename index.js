@@ -51,6 +51,8 @@ function mount(prefix, app) {
     debug('mount %s %s -> %s', prefix, name, newPath);
     if (!newPath) return yield* upstream;
 
+    // give mounted app access to its mount `path`.
+    this.mountPath = prefix;
     this.path = newPath;
     debug('enter %s -> %s', prev, this.path);
 
