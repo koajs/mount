@@ -52,7 +52,7 @@ function mount(prefix, app) {
     if (!newPath) return yield* upstream;
 
     // give mounted app access to its mount `path`.
-    this.mountPath = (trailingSlash ? prefix.slice(0,-1) : prefix) || '/';
+    this.mountPath = prefix;
     this.path = newPath;
     debug('enter %s -> %s', prev, this.path);
 
