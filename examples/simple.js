@@ -15,23 +15,21 @@ var koa = require('koa');
 
 var a = koa();
 
-a.use(function(next){
-  return function *(){
+a.use(function *(){
     yield next;
     this.body = 'Hello';
   }
-});
+);
 
 // world
 
 var b = koa();
 
-b.use(function(next){
-  return function *(){
+b.use(function *(){
     yield next;
     this.body = 'World';
   }
-});
+);
 
 // app
 
