@@ -15,7 +15,7 @@ var koa = require('koa');
 
 var a = koa();
 
-a.use(function *(){
+a.use(function *(next){
     yield next;
     this.body = 'Hello';
   }
@@ -25,7 +25,7 @@ a.use(function *(){
 
 var b = koa();
 
-b.use(function *(){
+b.use(function *(next){
     yield next;
     this.body = 'World';
   }
