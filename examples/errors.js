@@ -12,23 +12,17 @@ var a = koa();
 var b = koa();
 var c = koa();
 
-a.use(function(next){
-  return function *(){
+a.use(function *(next){
     yield next;
-  }
 });
 
-b.use(function(next){
-  return function *(){
+b.use(function *(next){
     yield next;
-  }
 });
 
-c.use(function(next){
-  return function *(){
+c.use(function *(next){
     yield next;
     throw new Error('tobi escaped!');
-  }
 });
 
 a.use(mount(b));
