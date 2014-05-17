@@ -12,22 +12,18 @@ var koa = require('koa');
 
 var a = koa();
 
-a.use(function(next){
-  return function *(){
+a.use(function *(next){
     yield next;
     if ('/hello' == this.path) this.body = 'Hello';
-  }
 });
 
 // GET /world
 
 var b = koa();
 
-b.use(function(next){
-  return function *(){
+b.use(function *(next){
     yield next;
     if ('/world' == this.path) this.body = 'World';
-  }
 });
 
 // app
