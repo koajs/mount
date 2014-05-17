@@ -18,25 +18,19 @@ var a = koa();
 var b = koa();
 var c = koa();
 
-a.use(function(next){
-  return function *(){
+a.use(function *(next){
     yield next;
     if (!this.body) this.body = 'foo';
-  }
 });
 
-b.use(function(next){
-  return function *(){
+b.use(function *(next){
     yield next;
     if (!this.body) this.body = 'bar';
-  }
 });
 
-c.use(function(next){
-  return function *(){
+c.use(function *(next){
     yield next;
     this.body = 'baz';
-  }
 });
 
 app.use(mount('/foo', a));
