@@ -7,18 +7,14 @@
 var mount = require('..');
 var koa = require('koa');
 
-function hello(next){
-  return function *(){
-    yield next;
-    this.body = 'Hello';
-  }
+function *hello(next){
+  yield next;
+  this.body = 'Hello';
 }
 
-function world(next){
-  return function *(){
-    yield next;
-    this.body = 'World';
-  }
+function *world(next){
+  yield next;
+  this.body = 'World';
 }
 
 var app = koa();
