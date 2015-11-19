@@ -13,15 +13,15 @@
     "index.js"
   ],
   "devDependencies": {
-    "istanbul-harmony": "0",
+    "istanbul": "0",
     "koa": "latest",
-    "should": "^3.0.0",
-    "mocha": "^1.12.1",
-    "supertest": "0"
+    "mocha": "2",
+    "should": "7",
+    "supertest": "1"
   },
   "license": "MIT",
   "dependencies": {
-    "koa-compose": "^2.2.0",
+    "koa-compose": "3",
     "debug": "*"
   },
   "scripts": {
