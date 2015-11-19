@@ -6,23 +6,24 @@
  */
 
 var mount = require('..');
-var koa = require('koa');
+var Koa = require('koa');
 
-var a = koa();
-var b = koa();
-var c = koa();
+var a = new Koa();
+var b = new Koa();
+var c = new Koa();
 
-a.use(function *(next){
-    yield next;
+a.use((ctx, next) => {
+  return next();
 });
 
-b.use(function *(next){
-    yield next;
+b.use((ctx, next) => {
+  return next();
 });
 
-c.use(function *(next){
-    yield next;
+c.use((ctx, next) => {
+  return next().then(() => {
     throw new Error('tobi escaped!');
+  });
 });
 
 a.use(mount(b));

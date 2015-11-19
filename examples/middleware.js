@@ -5,19 +5,21 @@
  */
 
 var mount = require('..');
-var koa = require('koa');
+var Koa = require('koa');
 
-function *hello(next){
-  yield next;
-  this.body = 'Hello';
+function hello(ctx, next){
+  return next().then(() => {
+    ctx.body = 'Hello';
+  });
 }
 
-function *world(next){
-  yield next;
-  this.body = 'World';
+function world(ctx, next){
+  return next().then(() => {
+    ctx.body = 'World';
+  });
 }
 
-var app = koa();
+var app = new Koa();
 
 app.use(mount('/hello', hello));
 app.use(mount('/world', world));
