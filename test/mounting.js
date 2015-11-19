@@ -1,24 +1,26 @@
 
 var request = require('supertest');
 var mount = require('..');
-var koa = require('koa');
+var Koa = require('koa');
 
 describe('mount(app)', function(){
   it('should mount at /', function(done){
-    var a = koa();
-    var b = koa();
+    var a = new Koa();
+    var b = new Koa();
 
-    a.use(function *(next){
-      yield next;
-      if ('/hello' == this.path) this.body = 'Hello';
+    a.use((ctx, next) => {
+      return next().then(() => {
+        if ('/hello' == ctx.path) ctx.body = 'Hello';
+      });
     });
 
-    b.use(function *(next){
-      yield next;
-      if ('/world' == this.path) this.body = 'World';
+    b.use((ctx, next) => {
+      return next().then(() => {
+        if ('/world' == ctx.path) ctx.body = 'World';
+      });
     });
 
-    var app = koa();
+    var app = new Koa();
     app.use(mount(a));
     app.use(mount(b));
 
@@ -44,18 +46,20 @@ describe('mount(app)', function(){
 
 describe('mount(path, app)', function(){
   it('should mount the app at the given path', function(done){
-    var app = koa();
-    var a = koa();
-    var b = koa();
+    var app = new Koa();
+    var a = new Koa();
+    var b = new Koa();
 
-    a.use(function *(next){
-      yield next;
-      this.body = 'Hello';
+    a.use((ctx, next) => {
+      return next().then(() => {
+        ctx.body = 'Hello';
+      });
     });
 
-    b.use(function *(next){
-      yield next;
-      this.body = 'World';
+    b.use((ctx, next) => {
+      return next().then(() => {
+        ctx.body = 'World';
+      });
     });
 
     app.use(mount('/hello', a));
@@ -81,24 +85,27 @@ describe('mount(path, app)', function(){
   })
 
   it('should cascade properly', function(done){
-    var app = koa();
-    var a = koa();
-    var b = koa();
-    var c = koa();
+    var app = new Koa();
+    var a = new Koa();
+    var b = new Koa();
+    var c = new Koa();
 
-    a.use(function *(next){
-      yield next;
-      if (!this.body) this.body = 'foo';
+    a.use((ctx, next) => {
+      return next().then(() => {
+        if (!ctx.body) ctx.body = 'foo';
+      });
     });
 
-    b.use(function *(next){
-      yield next;
-      if (!this.body) this.body = 'bar';
+    b.use((ctx, next) => {
+      return next().then(() => {
+        if (!ctx.body) ctx.body = 'bar';
+      });
     });
 
-    c.use(function *(next){
-      yield next;
-      this.body = 'baz';
+    c.use((ctx, next) => {
+      return next().then(() => {
+        ctx.body = 'baz';
+      });
     });
 
     app.use(mount('/foo', a));
@@ -132,24 +139,24 @@ describe('mount(path, app)', function(){
   })
 
   it('should restore prefix for mounted apps', function(done){
-    var app = koa();
-    var a = koa();
-    var b = koa();
-    var c = koa();
+    var app = new Koa();
+    var a = new Koa();
+    var b = new Koa();
+    var c = new Koa();
 
-    a.use(function *(next){
-      this.body = 'foo';
-      yield next;
+    a.use((ctx, next) => {
+      ctx.body = 'foo';
+      return next();
     });
 
-    b.use(function *(next){
-      this.body = 'bar';
-      yield next;
+    b.use((ctx, next) => {
+      ctx.body = 'bar';
+      return next();
     });
 
-    c.use(function *(next){
-      this.body = 'baz';
-      yield next;
+    c.use((ctx, next) => {
+      ctx.body = 'baz';
+      return next();
     });
 
     app.use(mount('/foo', a));
@@ -162,22 +169,22 @@ describe('mount(path, app)', function(){
   })
 
   it('should restore prefix for mounted middleware', function(done){
-    var app = koa();
-    var a = koa();
+    var app = new Koa();
+    var a = new Koa();
 
-    app.use(mount('/foo', function *(next){
-      this.body = 'foo';
-      yield next;
+    app.use(mount('/foo', (ctx, next) => {
+      ctx.body = 'foo';
+      return next();
     }));
 
-    app.use(mount('/foo/bar', function *(next){
-      this.body = 'bar';
-      yield next;
+    app.use(mount('/foo/bar', (ctx, next) => {
+      ctx.body = 'bar';
+      return next();
     }));
 
-    app.use(mount('/foo/bar/baz', function *(next){
-      this.body = 'baz';
-      yield next;
+    app.use(mount('/foo/bar/baz', (ctx, next) => {
+      ctx.body = 'baz';
+      return next();
     }));
 
     request(app.listen())
@@ -186,19 +193,21 @@ describe('mount(path, app)', function(){
   })
 
   it('should have the correct path', function(done){
-    var app = koa();
-    var a = koa();
+    var app = new Koa();
+    var a = new Koa();
 
-    a.use(function *(next){
-      this.path.should.equal('/');
-      yield next;
-      this.path.should.equal('/');
+    a.use((ctx, next) => {
+      ctx.path.should.equal('/');
+      return next().then(() => {
+        ctx.path.should.equal('/');
+      });
     });
 
-    app.use(function *(next){
-      this.path.should.equal('/foo');
-      yield next;
-      this.path.should.equal('/foo');
+    app.use((ctx, next) => {
+      ctx.path.should.equal('/foo');
+      return next().then(() => {
+        ctx.path.should.equal('/foo');
+      });
     });
 
     app.use(mount('/foo', a));
@@ -210,17 +219,19 @@ describe('mount(path, app)', function(){
 
   describe('when middleware is passed', function(){
     it('should mount', function(done){
-      function *hello(next){
-        yield next;
-        this.body = 'Hello';
+      function hello(ctx, next){
+        return next().then(() => {
+          ctx.body = 'Hello';
+        });
       }
 
-      function *world(next){
-        yield next;
-        this.body = 'World';
+      function world(ctx, next){
+        return next().then(() => {
+          ctx.body = 'World';
+        });
       }
 
-      var app = koa();
+      var app = new Koa();
 
       app.use(mount('/hello', hello));
       app.use(mount('/world', world));
@@ -240,10 +251,10 @@ describe('mount(path, app)', function(){
 })
 
 describe('mount(/prefix)', function(){
-  var app = koa();
+  var app = new Koa();
 
-  app.use(mount('/prefix', function* () {
-    this.status = 204;
+  app.use(mount('/prefix', (ctx) => {
+    ctx.status = 204;
   }));
 
   var server = app.listen();
@@ -280,10 +291,10 @@ describe('mount(/prefix)', function(){
 })
 
 describe('mount(/prefix/)', function(){
-  var app = koa();
+  var app = new Koa();
 
-  app.use(mount('/prefix/', function* () {
-    this.status = 204;
+  app.use(mount('/prefix/', (ctx) => {
+    ctx.status = 204;
   }));
 
   var server = app.listen();
