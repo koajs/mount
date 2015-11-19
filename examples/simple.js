@@ -8,32 +8,32 @@
  * GET /world
  */
 
-var mount = require('./');
-var koa = require('koa');
+var mount = require('../');
+var Koa = require('koa');
 
 // hello
 
-var a = koa();
+var a = new Koa();
 
-a.use(function *(next){
-    yield next;
-    this.body = 'Hello';
-  }
-);
+a.use((ctx, next) => {
+  return next().then(() => {
+    ctx.body = 'Hello';
+  });
+});
 
 // world
 
-var b = koa();
+var b = new Koa();
 
-b.use(function *(next){
-    yield next;
-    this.body = 'World';
-  }
-);
+b.use((ctx, next) => {
+  return next().then(() => {
+    ctx.body = 'World';
+  });
+});
 
 // app
 
-var app = koa();
+var app = new Koa();
 
 app.use(mount('/hello', a));
 app.use(mount('/world', b));
