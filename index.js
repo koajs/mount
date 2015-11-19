@@ -45,25 +45,26 @@ function mount(prefix, app) {
   var name = app.name || 'unnamed';
   debug('mount %s %s', prefix, name);
 
-  return function *(upstream){
-    var prev = this.path;
+  return function (ctx, upstream){
+    var prev = ctx.path;
     var newPath = match(prev);
     debug('mount %s %s -> %s', prefix, name, newPath);
-    if (!newPath) return yield* upstream;
+    if (!newPath) return upstream();
 
-    this.mountPath = prefix;
-    this.path = newPath;
-    debug('enter %s -> %s', prev, this.path);
+    ctx.mountPath = prefix;
+    ctx.path = newPath;
+    debug('enter %s -> %s', prev, ctx.path);
 
-    yield* downstream.call(this, function *(){
-      this.path = prev;
-      yield* upstream;
-      this.path = newPath;
-    }.call(this));
-
-    debug('leave %s -> %s', prev, this.path);
-    this.path = prev;
-  }
+    return Promise.resolve(downstream(ctx, () => {
+      ctx.path = prev;
+      return upstream().then(() => {
+        ctx.path = newPath;
+      });
+    })).then(() => {
+      debug('leave %s -> %s', prev, ctx.path);
+      ctx.path = prev;
+    });
+  };
 
   /**
    * Check if `prefix` satisfies a `path`.

@@ -13,20 +13,20 @@
     "index.js"
   ],
   "devDependencies": {
-    "istanbul-harmony": "0",
+    "istanbul": "0",
     "koa": "latest",
-    "should": "^3.0.0",
-    "mocha": "^1.12.1",
-    "supertest": "0"
+    "mocha": "2",
+    "should": "7",
+    "supertest": "1"
   },
   "license": "MIT",
   "dependencies": {
-    "koa-compose": "^2.2.0",
+    "koa-compose": "3",
     "debug": "*"
   },
   "scripts": {
-    "test": "NODE_ENV=test mocha --harmony-generators --require should --reporter spec",
-    "test-cov": "NODE_ENV=test node --harmony-generators ./node_modules/.bin/istanbul cover ./node_modules/.bin/_mocha -- --require should",
-    "test-travis": "NODE_ENV=test node --harmony-generators ./node_modules/.bin/istanbul cover ./node_modules/.bin/_mocha --report lcovonly -- --require should"
+    "test": "NODE_ENV=test mocha --require should --reporter spec",
+    "test-cov": "NODE_ENV=test istanbul cover ./node_modules/.bin/_mocha -- --require should",
+    "test-travis": "NODE_ENV=test istanbul cover ./node_modules/.bin/_mocha --report lcovonly -- --require should"
   }
 }

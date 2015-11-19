@@ -6,29 +6,31 @@
  */
 
 var mount = require('..');
-var koa = require('koa');
+var Koa = require('koa');
 
 // GET /hello
 
-var a = koa();
+var a = new Koa();
 
-a.use(function *(next){
-    yield next;
-    if ('/hello' == this.path) this.body = 'Hello';
+a.use((ctx, next) => {
+  return next().then(() => {
+    if ('/hello' == ctx.path) ctx.body = 'Hello';
+  });
 });
 
 // GET /world
 
-var b = koa();
+var b = new Koa();
 
-b.use(function *(next){
-    yield next;
-    if ('/world' == this.path) this.body = 'World';
+b.use((ctx, next) => {
+  return next().then(() => {
+    if ('/world' == ctx.path) ctx.body = 'World';
+  });
 });
 
 // app
 
-var app = koa();
+var app = new Koa();
 
 app.use(mount(a));
 app.use(mount(b));
