@@ -14,15 +14,15 @@
   ],
   "devDependencies": {
     "istanbul": "0",
-    "koa": "1",
-    "should": "7",
+    "koa": "^2.0.0-alpha.3",
     "mocha": "2",
+    "should": "7",
     "supertest": "1"
   },
   "license": "MIT",
   "dependencies": {
-    "koa-compose": "^2.2.0",
-    "debug": "*"
+    "debug": "*",
+    "koa-compose": "3"
   },
   "scripts": {
     "test": "NODE_ENV=test mocha --require should --reporter spec",
