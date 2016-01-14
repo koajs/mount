@@ -54,15 +54,21 @@ function mount(prefix, app) {
     this.mountPath = prefix;
     this.path = newPath;
     debug('enter %s -> %s', prev, this.path);
-
-    yield* downstream.call(this, function *(){
+    
+    try {
+      yield* downstream.call(this, function *(){
+        this.path = prev;
+        
+        try {
+          yield* upstream;
+        } finally {
+          this.path = newPath;
+        }
+      }.call(this));
+    } finally {
+      debug('leave %s -> %s', prev, this.path);
       this.path = prev;
-      yield* upstream;
-      this.path = newPath;
-    }.call(this));
-
-    debug('leave %s -> %s', prev, this.path);
-    this.path = prev;
+    }
   }
 
   /**
