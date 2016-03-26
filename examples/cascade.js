@@ -11,26 +11,26 @@
  */
 
 var mount = require('..');
-var koa = require('koa');
+var Koa = require('koa');
 
-var app = koa();
-var a = koa();
-var b = koa();
-var c = koa();
+var app = new Koa();
+var a = new Koa();
+var b = new Koa();
+var c = new Koa();
 
-a.use(function *(next){
-    yield next;
-    if (!this.body) this.body = 'foo';
+a.use(async function (ctx, next){
+  await next();
+  if (!ctx.body) ctx.body = 'foo';
 });
 
-b.use(function *(next){
-    yield next;
-    if (!this.body) this.body = 'bar';
+b.use(async function (ctx, next){
+  await next();
+  if (!ctx.body) ctx.body = 'bar';
 });
 
-c.use(function *(next){
-    yield next;
-    this.body = 'baz';
+c.use(async function (ctx, next){
+  await next();
+  ctx.body = 'baz';
 });
 
 app.use(mount('/foo', a));

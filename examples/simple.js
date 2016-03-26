@@ -9,31 +9,29 @@
  */
 
 var mount = require('./');
-var koa = require('koa');
+var Koa = require('koa');
 
 // hello
 
-var a = koa();
+var a = new Koa();
 
-a.use(function *(next){
-    yield next;
-    this.body = 'Hello';
-  }
-);
+a.use(async function (ctx, next){
+  await next();
+  ctx.body = 'Hello';
+});
 
 // world
 
-var b = koa();
+var b = new Koa();
 
-b.use(function *(next){
-    yield next;
-    this.body = 'World';
-  }
-);
+b.use(async function (ctx, next){
+  await next();
+  ctx.body = 'World';
+});
 
 // app
 
-var app = koa();
+var app = new Koa();
 
 app.use(mount('/hello', a));
 app.use(mount('/world', b));

@@ -2,7 +2,7 @@
   "name": "koa-mount",
   "description": "Mounting middleware for koa",
   "repository": "koajs/mount",
-  "version": "1.3.0",
+  "version": "2.0.0",
   "keywords": [
     "koa",
     "middleware",
@@ -13,20 +13,23 @@
     "index.js"
   ],
   "devDependencies": {
+    "babel-cli": "6",
+    "babel-core": "6",
+    "babel-plugin-transform-async-to-generator": "6",
     "istanbul": "0",
-    "koa": "1",
-    "should": "8.0.2",
+    "koa": "^2.0.0-alpha.3",
     "mocha": "2",
+    "should": "8",
     "supertest": "1"
   },
   "license": "MIT",
   "dependencies": {
-    "koa-compose": "^2.2.0",
-    "debug": "*"
+    "debug": "*",
+    "koa-compose": "^3.0.0"
   },
   "scripts": {
-    "test": "NODE_ENV=test mocha --harmony --require should --reporter spec",
-    "test-cov": "NODE_ENV=test node --harmony ./node_modules/.bin/istanbul cover ./node_modules/.bin/_mocha -- --require should",
-    "test-travis": "NODE_ENV=test node --harmony ./node_modules/.bin/istanbul cover ./node_modules/.bin/_mocha --report lcovonly -- --require should"
+    "test": "NODE_ENV=test mocha --require babel-core/register --reporter spec",
+    "test-cov": "NODE_ENV=test node --harmony ./node_modules/.bin/istanbul cover ./node_modules/.bin/_mocha -- --require babel-core/register",
+    "test-travis": "NODE_ENV=test node --harmony ./node_modules/.bin/istanbul cover ./node_modules/.bin/_mocha --report lcovonly -- --require babel-core/register"
   }
 }

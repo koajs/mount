@@ -1,7 +1,7 @@
 # koa-mount
 
   Mount other Koa applications as middleware. The `path` passed to `mount()` is stripped
-  from the URL temporarily until the stack unwinds. This is useful for creating entire 
+  from the URL temporarily until the stack unwinds. This is useful for creating entire
   apps or middleware that will function correctly regardless of which path segment(s)
   they should operate on.
 
@@ -24,29 +24,29 @@ $ npm install koa-mount
 
 ```js
 var mount = require('koa-mount');
-var koa = require('koa');
+var Koa = require('koa');
 
 // hello
 
-var a = koa();
+var a = new Koa();
 
-a.use(function *(next){
-  yield next;
-  this.body = 'Hello';
+a.use(async function (ctx, next){
+  await next();
+  ctx.body = 'Hello';
 });
 
 // world
 
-var b = koa();
+var b = new Koa();
 
-b.use(function *(next){
-  yield next;
-  this.body = 'World';
+b.use(async function (ctx, next){
+  await next();
+  ctx.body = 'World';
 });
 
 // app
 
-var app = koa();
+var app = new Koa();
 
 app.use(mount('/hello', a));
 app.use(mount('/world', b));
@@ -75,19 +75,19 @@ World
 
 ```js
 var mount = require('koa-mount');
-var koa = require('koa');
+var Koa = require('koa');
 
-function *hello(next){
-  yield next;
-  this.body = 'Hello';
+async function hello(ctx, next){
+  await next();
+  ctx.body = 'Hello';
 }
 
-function *world(next){
-  yield next;
-  this.body = 'World';
+async function world(ctx, next){
+  await next();
+  ctx.body = 'World';
 }
 
-var app = koa();
+var app = new Koa();
 
 app.use(mount('/hello', hello));
 app.use(mount('/world', world));
