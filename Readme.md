@@ -8,7 +8,7 @@
 ## Installation
 
 ```js
-$ npm install koa-mount
+$ npm install koa-mount@next
 ```
 
 ## Examples
