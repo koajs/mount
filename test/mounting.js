@@ -2,6 +2,7 @@
 var request = require('supertest');
 var mount = require('..');
 var koa = require('koa');
+var should = require('should');
 
 describe('mount(app)', function(){
   it('should mount at /', function(done){
@@ -235,6 +236,59 @@ describe('mount(path, app)', function(){
         .get('/world')
         .expect('World', done);
       });
+    })
+  })
+
+  describe('when multiple middlewares are passed', function() {
+    var app = new koa();
+
+    var say = text => function *(next) {
+      this.body = text;
+      yield next;
+    };
+
+    var setStatus = status => function *() {
+      this.status = status;
+    };
+
+    app.use(mount('/hello', [say('hello'), setStatus(201)]));
+    app.use(mount('/world', [say('world'), setStatus(200)]));
+    app.use(mount('/prefix', function *() {
+      this.status = 204;
+    }));
+
+    var server = app.listen();
+
+    it('should match /prefix', function(done) {
+      request(server)
+        .get('/prefix')
+        .expect(204, done)
+    })
+
+    it('should match /hello', function(done){
+      request(server)
+      .get('/hello')
+      .end(function (err, res) {
+        should.not.exists(err);
+        should.exists(res);
+        res.statusCode.should.be.equal(201);
+        should.exists(res.text);
+        res.text.should.be.equal('hello');
+        done();
+      })
+    })
+
+    it('should match /world', function(done){
+      request(server)
+      .get('/world')
+      .end(function (err, res) {
+        should.not.exists(err);
+        should.exists(res);
+        res.statusCode.should.be.equal(200);
+        should.exists(res.text);
+        res.text.should.be.equal('world');
+        done();
+      })
     })
   })
 })
