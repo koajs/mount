@@ -96,6 +96,36 @@ app.listen(3000);
 console.log('listening on port 3000');
 ```
 
+You can also mount multiple middlewares if needed. It can be useful
+when you want to have an endpoint secured with the same app instance.
+
+```js
+var mount = require('koa-mount');
+var Koa = require('koa');
+
+async function isAuthed(ctx, next){
+  // apply logic here
+}
+
+async function hello(ctx, next){
+  await next();
+  ctx.body = 'Hello';
+}
+
+async function world(ctx, next){
+  await next();
+  ctx.body = '*Secured* World';
+}
+
+var app = new Koa();
+
+app.use(mount('/hello', hello));
+app.use(mount('/secured', [isAuthed, world]));
+
+app.listen(3000);
+console.log('listening on port 3000');
+```
+
 ### Optional Paths
 
   The path argument is optional, defaulting to "/":
