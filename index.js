@@ -24,7 +24,11 @@ module.exports = mount;
  * @api public
  */
 
-function mount(prefix, app) {
+function mount(prefix, _app) {
+  var app = Array.isArray(_app)
+    ? compose(_app)
+    : _app;
+
   if ('string' != typeof prefix) {
     app = prefix;
     prefix = '/';

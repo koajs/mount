@@ -1,7 +1,7 @@
 # koa-mount
 
   Mount other Koa applications as middleware. The `path` passed to `mount()` is stripped
-  from the URL temporarily until the stack unwinds. This is useful for creating entire 
+  from the URL temporarily until the stack unwinds. This is useful for creating entire
   apps or middleware that will function correctly regardless of which path segment(s)
   they should operate on.
 
@@ -91,6 +91,35 @@ var app = koa();
 
 app.use(mount('/hello', hello));
 app.use(mount('/world', world));
+
+app.listen(3000);
+console.log('listening on port 3000');
+```
+
+You can also mount multiple middlewares if needed. It can be useful when you want to have an endpoint secured with the same app instance.
+
+```js
+var mount = require('koa-mount');
+var koa = require('koa');
+
+function *isAuthed(next){
+  // apply logic here
+}
+
+function *hello(next){
+  yield next;
+  this.body = 'Hello';
+}
+
+function *world(next){
+  yield next;
+  this.body = '*Secured* World';
+}
+
+var app = new koa();
+
+app.use(mount('/hello', hello));
+app.use(mount('/secured', [isAuthed, world]));
 
 app.listen(3000);
 console.log('listening on port 3000');
