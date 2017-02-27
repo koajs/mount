@@ -8,7 +8,7 @@
 ## Installation
 
 ```js
-$ npm install koa-mount@next
+$ npm install koa-mount
 ```
 
 ## Examples
@@ -23,12 +23,12 @@ $ npm install koa-mount@next
   when mounted.
 
 ```js
-var mount = require('koa-mount');
-var Koa = require('koa');
+const mount = require('koa-mount');
+const Koa = require('koa');
 
 // hello
 
-var a = new Koa();
+const a = new Koa();
 
 a.use(async function (ctx, next){
   await next();
@@ -37,7 +37,7 @@ a.use(async function (ctx, next){
 
 // world
 
-var b = new Koa();
+const b = new Koa();
 
 b.use(async function (ctx, next){
   await next();
@@ -46,7 +46,7 @@ b.use(async function (ctx, next){
 
 // app
 
-var app = new Koa();
+const app = new Koa();
 
 app.use(mount('/hello', a));
 app.use(mount('/world', b));
@@ -74,8 +74,8 @@ World
   of the prefix, as they're not aware of it.
 
 ```js
-var mount = require('koa-mount');
-var Koa = require('koa');
+const mount = require('koa-mount');
+const Koa = require('koa');
 
 async function hello(ctx, next){
   await next();
@@ -87,7 +87,7 @@ async function world(ctx, next){
   ctx.body = 'World';
 }
 
-var app = new Koa();
+const app = new Koa();
 
 app.use(mount('/hello', hello));
 app.use(mount('/world', world));
