@@ -3,9 +3,9 @@
  * Module dependencies.
  */
 
-var debug = require('debug')('koa-mount');
-var compose = require('koa-compose');
-var assert = require('assert');
+const debug = require('debug')('koa-mount');
+const compose = require('koa-compose');
+const assert = require('assert');
 
 /**
  * Expose `mount()`.
@@ -33,37 +33,36 @@ function mount(prefix, app) {
   assert('/' == prefix[0], 'mount path must begin with "/"');
 
   // compose
-  var downstream = app.middleware
+  const downstream = app.middleware
     ? compose(app.middleware)
     : app;
 
   // don't need to do mounting here
   if ('/' == prefix) return downstream;
 
-  var trailingSlash = '/' == prefix.slice(-1);
+  const trailingSlash = '/' == prefix.slice(-1);
 
-  var name = app.name || 'unnamed';
+  const name = app.name || 'unnamed';
   debug('mount %s %s', prefix, name);
 
-  return function (ctx, upstream){
-    var prev = ctx.path;
-    var newPath = match(prev);
+  return async function (ctx, upstream){
+    const prev = ctx.path;
+    const newPath = match(prev);
     debug('mount %s %s -> %s', prefix, name, newPath);
-    if (!newPath) return upstream();
+    if (!newPath) return await upstream();
 
     ctx.mountPath = prefix;
     ctx.path = newPath;
     debug('enter %s -> %s', prev, ctx.path);
 
-    return Promise.resolve(downstream(ctx, () => {
+    await downstream(ctx, async () => {
       ctx.path = prev;
-      return upstream().then(() => {
-        ctx.path = newPath;
-      });
-    })).then(() => {
-      debug('leave %s -> %s', prev, ctx.path);
-      ctx.path = prev;
+      await upstream();
+      ctx.path = newPath;
     });
+
+    debug('leave %s -> %s', prev, ctx.path);
+    ctx.path = prev;
   };
 
   /**
@@ -85,7 +84,7 @@ function mount(prefix, app) {
     // does not match prefix at all
     if (0 != path.indexOf(prefix)) return false;
 
-    var newPath = path.replace(prefix, '') || '/';
+    const newPath = path.replace(prefix, '') || '/';
     if (trailingSlash) return newPath;
 
     // `/mount` does not match `/mountlkjalskjdf`
