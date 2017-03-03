@@ -13,9 +13,6 @@
     "index.js"
   ],
   "devDependencies": {
-    "babel-cli": "6",
-    "babel-core": "6",
-    "babel-plugin-transform-async-to-generator": "6",
     "istanbul": "0",
     "koa": "^2.0.0-alpha.3",
     "mocha": "2",
@@ -28,8 +25,8 @@
     "koa-compose": "^3.0.0"
   },
   "scripts": {
-    "test": "NODE_ENV=test mocha --require babel-core/register --reporter spec",
-    "test-cov": "NODE_ENV=test node --harmony ./node_modules/.bin/istanbul cover ./node_modules/.bin/_mocha -- --require babel-core/register",
-    "test-travis": "NODE_ENV=test node --harmony ./node_modules/.bin/istanbul cover ./node_modules/.bin/_mocha --report lcovonly -- --require babel-core/register"
+    "test": "NODE_ENV=test mocha --reporter spec",
+    "test-cov": "NODE_ENV=test istanbul cover ./node_modules/.bin/_mocha",
+    "test-travis": "NODE_ENV=test istanbul cover ./node_modules/.bin/_mocha --report lcovonly"
   }
 }
