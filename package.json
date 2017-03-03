@@ -13,16 +13,16 @@
     "index.js"
   ],
   "devDependencies": {
-    "istanbul": "0",
-    "koa": "^2.0.0-alpha.3",
-    "mocha": "2",
-    "should": "8",
-    "supertest": "1"
+    "istanbul": "^0.4.5",
+    "koa": "^2.0.1",
+    "mocha": "^3.2.0",
+    "should": "^11.2.0",
+    "supertest": "^3.0.0"
   },
   "license": "MIT",
   "dependencies": {
-    "debug": "*",
-    "koa-compose": "^3.0.0"
+    "debug": "^2.6.1",
+    "koa-compose": "^3.2.1"
   },
   "scripts": {
     "test": "NODE_ENV=test mocha --reporter spec",
