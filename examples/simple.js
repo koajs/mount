@@ -8,12 +8,12 @@
  * GET /world
  */
 
-var mount = require('./');
-var Koa = require('koa');
+const mount = require('..');
+const Koa = require('koa');
 
 // hello
 
-var a = new Koa();
+const a = new Koa();
 
 a.use(async function (ctx, next){
   await next();
@@ -22,7 +22,7 @@ a.use(async function (ctx, next){
 
 // world
 
-var b = new Koa();
+const b = new Koa();
 
 b.use(async function (ctx, next){
   await next();
@@ -31,7 +31,7 @@ b.use(async function (ctx, next){
 
 // app
 
-var app = new Koa();
+const app = new Koa();
 
 app.use(mount('/hello', a));
 app.use(mount('/world', b));

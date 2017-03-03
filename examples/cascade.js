@@ -10,13 +10,13 @@
  * GET /foo/bar/baz
  */
 
-var mount = require('..');
-var Koa = require('koa');
+const mount = require('..');
+const Koa = require('koa');
 
-var app = new Koa();
-var a = new Koa();
-var b = new Koa();
-var c = new Koa();
+const app = new Koa();
+const a = new Koa();
+const b = new Koa();
+const c = new Koa();
 
 a.use(async function (ctx, next){
   await next();

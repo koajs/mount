@@ -4,8 +4,8 @@
  * may be mounted just like applications.j
  */
 
-var mount = require('..');
-var Koa = require('koa');
+const mount = require('..');
+const Koa = require('koa');
 
 async function hello(ctx, next){
   await next();
@@ -17,7 +17,7 @@ async function world(ctx, next){
   ctx.body = 'World';
 }
 
-var app = new Koa();
+const app = new Koa();
 
 app.use(mount('/hello', hello));
 app.use(mount('/world', world));
