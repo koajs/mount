@@ -5,31 +5,31 @@
  * centralized logging etc.
  */
 
-const mount = require('..');
-const Koa = require('koa');
+const mount = require('..')
+const Koa = require('koa')
 
-const a = new Koa();
-const b = new Koa();
-const c = new Koa();
+const a = new Koa()
+const b = new Koa()
+const c = new Koa()
 
-a.use(async function (ctx, next){
-  await next();
-});
+a.use(async function (ctx, next) {
+  await next()
+})
 
-b.use(async function (ctx, next){
-  await next();
-});
+b.use(async function (ctx, next) {
+  await next()
+})
 
-c.use(async function (ctx, next){
-  await next();
-  throw new Error('tobi escaped!');
-});
+c.use(async function (ctx, next) {
+  await next()
+  throw new Error('tobi escaped!')
+})
 
-a.use(mount(b));
-b.use(mount(c));
+a.use(mount(b))
+b.use(mount(c))
 
 // suppress stderr output if you want
-a.outputErrors = false;
+a.outputErrors = false
 
 // errors will propagate to the upstream app,
 // however you can still use the "error" listener
@@ -37,12 +37,12 @@ a.outputErrors = false;
 // in mind that it should be used in an unobtrusive way,
 // since most decisions should be made by the parent app.
 
-a.on('error', function(err, ctx){
+a.on('error', function (err, ctx) {
   console.log('%s %s: sending error "%s" to alert service',
     ctx.method,
     ctx.path,
-    err.message);
-});
+    err.message)
+})
 
-a.listen(3000);
-console.log('listening on port 3000');
+a.listen(3000)
+console.log('listening on port 3000')

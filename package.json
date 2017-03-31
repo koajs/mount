@@ -13,6 +13,10 @@
     "index.js"
   ],
   "devDependencies": {
+    "eslint": "^3.18.0",
+    "eslint-config-standard": "^7.1.0",
+    "eslint-plugin-promise": "^3.5.0",
+    "eslint-plugin-standard": "^2.1.1",
     "istanbul": "^0.4.5",
     "koa": "^2.0.1",
     "koa-static": "^3.0.0",
@@ -26,6 +30,7 @@
     "koa-compose": "^3.2.1"
   },
   "scripts": {
+    "lint": "eslint --fix .",
     "test": "NODE_ENV=test mocha --reporter spec",
     "test-cov": "NODE_ENV=test istanbul cover ./node_modules/.bin/_mocha",
     "test-travis": "NODE_ENV=test istanbul cover ./node_modules/.bin/_mocha --report lcovonly"

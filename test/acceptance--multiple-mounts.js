@@ -1,19 +1,19 @@
 
-const supertest = require('supertest');
-const serve = require('koa-static');
-const path = require('path');
-const Koa = require('koa');
+const supertest = require('supertest')
+const serve = require('koa-static')
+const path = require('path')
+const Koa = require('koa')
 
-const mount = require('..');
+const mount = require('..')
 
-const root = path.resolve(__dirname, '..');
+const root = path.resolve(__dirname, '..')
 
-const app = new Koa();
+const app = new Koa()
 
 app.use(mount('/examples', serve(path.resolve(root, 'examples'))))
 app.use(mount('/test', serve(path.resolve(root, 'test'))))
 
-const request = supertest.agent(app.listen());
+const request = supertest.agent(app.listen())
 
 describe('Acceptance: Multiple Mounts', () => {
   it('should serve /examples', () => (

@@ -10,32 +10,32 @@
  * GET /foo/bar/baz
  */
 
-const mount = require('..');
-const Koa = require('koa');
+const mount = require('..')
+const Koa = require('koa')
 
-const app = new Koa();
-const a = new Koa();
-const b = new Koa();
-const c = new Koa();
+const app = new Koa()
+const a = new Koa()
+const b = new Koa()
+const c = new Koa()
 
-a.use(async function (ctx, next){
-  await next();
-  if (!ctx.body) ctx.body = 'foo';
-});
+a.use(async function (ctx, next) {
+  await next()
+  if (!ctx.body) ctx.body = 'foo'
+})
 
-b.use(async function (ctx, next){
-  await next();
-  if (!ctx.body) ctx.body = 'bar';
-});
+b.use(async function (ctx, next) {
+  await next()
+  if (!ctx.body) ctx.body = 'bar'
+})
 
-c.use(async function (ctx, next){
-  await next();
-  ctx.body = 'baz';
-});
+c.use(async function (ctx, next) {
+  await next()
+  ctx.body = 'baz'
+})
 
-app.use(mount('/foo', a));
-a.use(mount('/bar', b));
-b.use(mount('/baz', c));
+app.use(mount('/foo', a))
+a.use(mount('/bar', b))
+b.use(mount('/baz', c))
 
-app.listen(3000);
-console.log('listening on port 3000');
+app.listen(3000)
+console.log('listening on port 3000')
