@@ -321,3 +321,52 @@ describe('mount(/prefix/)', function(){
     .expect(204, done);
   })
 })
+
+describe('mount(/prefix) multiple', () => {
+  const app = new Koa();
+
+  app.use(mount('/a', async (ctx) => {
+    ctx.assert.equal('/a', ctx.path, 404)
+    ctx.status = 204
+  }))
+
+  app.use(mount('/b', async (ctx) => {
+    ctx.assert.equal('/b', ctx.path, 404)
+    ctx.status = 204
+  }))
+
+  app.use(mount('/c', async (ctx) => {
+    ctx.assert.equal('/c', ctx.path, 404)
+    ctx.status = 204
+  }))
+
+  const server = app.listen()
+
+  it('should serve all the right mounted paths', async () => {
+    await request(server)
+    .get('/a/a')
+    .expect(204)
+
+    await request(server)
+    .get('/b/b')
+    .expect(204)
+
+    await request(server)
+    .get('/c/c')
+    .expect(204)
+  })
+
+  it('should 404 on all the wrong paths', async () => {
+    await request(server)
+    .get('/a/b')
+    .expect(404)
+
+    await request(server)
+    .get('/b/c')
+    .expect(404)
+
+    await request(server)
+    .get('/c/a')
+    .expect(404)
+  })
+})
