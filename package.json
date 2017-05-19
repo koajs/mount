@@ -13,6 +13,11 @@
     "index.js"
   ],
   "devDependencies": {
+    "babel-core": "^6.24.1",
+    "babel-plugin-transform-regenerator": "^6.24.1",
+    "babel-polyfill": "^6.23.0",
+    "babel-preset-env": "^1.4.0",
+    "babel-register": "^6.24.1",
     "eslint": "^3.18.0",
     "eslint-config-standard": "^7.1.0",
     "eslint-plugin-promise": "^3.5.0",
@@ -31,11 +36,11 @@
   },
   "scripts": {
     "lint": "eslint --fix .",
-    "test": "NODE_ENV=test mocha --reporter spec",
+    "test": "NODE_ENV=test mocha --compilers js:babel-register --require babel-polyfill --reporter spec",
     "test-cov": "NODE_ENV=test istanbul cover ./node_modules/.bin/_mocha",
     "test-travis": "NODE_ENV=test istanbul cover ./node_modules/.bin/_mocha --report lcovonly"
   },
   "engines": {
-    "node": ">= 7.6.0"
+    "node": ">= 6.0.0"
   }
 }
