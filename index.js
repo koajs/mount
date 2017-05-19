@@ -45,24 +45,27 @@ function mount (prefix, app) {
   const name = app.name || 'unnamed'
   debug('mount %s %s', prefix, name)
 
-  return async function (ctx, upstream) {
+  return function (ctx, upstream) {
     const prev = ctx.path
     const newPath = match(prev)
     debug('mount %s %s -> %s', prefix, name, newPath)
-    if (!newPath) return await upstream()
+    if (!newPath) return upstream()
 
     ctx.mountPath = prefix
     ctx.path = newPath
     debug('enter %s -> %s', prev, ctx.path)
 
-    await downstream(ctx, async () => {
+    return Promise.resolve(downstream(ctx, () => {
       ctx.path = prev
-      await upstream()
-      ctx.path = newPath
+      return upstream()
+      .then(() => {
+        ctx.path = newPath
+      })
+    }))
+    .then(() => {
+      debug('leave %s -> %s', prev, ctx.path)
+      ctx.path = prev
     })
-
-    debug('leave %s -> %s', prev, ctx.path)
-    ctx.path = prev
   }
 
   /**
