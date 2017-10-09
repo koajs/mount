@@ -210,6 +210,33 @@ describe('mount(path, app)', function () {
     .end(done)
   })
 
+  describe('when errors occur', function () {
+    it('should have the correct path', function (done) {
+      var app = new Koa()
+      var a = new Koa()
+
+      a.use(async function (ctx, next) {
+        ctx.path.should.equal('/')
+        return ctx.throw(403, 'Forbidden')
+      })
+
+      app.use(async function (ctx, next) {
+        ctx.path.should.equal('/foo')
+        try {
+          await next()
+        } catch (err) {
+          ctx.path.should.equal('/foo')
+        }
+      })
+
+      app.use(mount('/foo', a))
+
+      request(app.listen())
+      .get('/foo')
+      .end(done)
+    })
+  })
+
   describe('when middleware is passed', function () {
     it('should mount', function (done) {
       async function hello (ctx, next) {
