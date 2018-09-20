@@ -26,8 +26,8 @@
   },
   "license": "MIT",
   "dependencies": {
-    "debug": "^2.6.1",
-    "koa-compose": "^3.2.1"
+    "debug": "^4.0.1",
+    "koa-compose": "^4.1.0"
   },
   "scripts": {
     "lint": "eslint --fix .",
