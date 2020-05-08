@@ -20,12 +20,14 @@ module.exports = mount
  *
  * @param {String|Application|Function} prefix, app, or function
  * @param {Application|Function} [app or function]
+ * @param {Boolean} [preserve]
  * @return {Function}
  * @api public
  */
 
-function mount (prefix, app) {
+function mount(prefix, app, preserve) {
   if (typeof prefix !== 'string') {
+    preserve = app
     app = prefix
     prefix = '/'
   }
@@ -51,11 +53,21 @@ function mount (prefix, app) {
     debug('mount %s %s -> %s', prefix, name, newPath)
     if (!newPath) return await upstream()
 
-    ctx.mountPath = prefix
-    ctx.path = newPath
-    debug('enter %s -> %s', prev, ctx.path)
+    let newCtx = ctx;
+    if (preserve) {
+      newCtx = app.createContext(ctx.req, ctx.res);
+      // use the same instance of Koa Request and Response on both ctx
+      // to be able to send response of the mounted app
+      newCtx.request = ctx.request;
+      newCtx.response = ctx.response;
+    }
 
-    await downstream(ctx, async () => {
+    newCtx.mountPath = prefix
+    newCtx.path = newPath
+
+    debug('enter %s -> %s', prev, newCtx.path)
+
+    await downstream(newCtx, async () => {
       ctx.path = prev
       await upstream()
       ctx.path = newPath
@@ -91,4 +103,12 @@ function mount (prefix, app) {
     if (newPath[0] !== '/') return false
     return newPath
   }
+
+  function getProps(ctx, keys) {
+    return keys.reduce((props, key) => {
+      props[key] = ctx[key];
+      return props;
+    }, {});
+  }
+
 }
