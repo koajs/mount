@@ -13,7 +13,7 @@
     "index.js"
   ],
   "devDependencies": {
-    "eslint": "^7.32.0",
+    "eslint": "^8.4.1",
     "eslint-config-standard": "^7.1.0",
     "eslint-plugin-promise": "^3.5.0",
     "eslint-plugin-standard": "^5.0.0",
