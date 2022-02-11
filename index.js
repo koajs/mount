@@ -49,7 +49,7 @@ function mount (prefix, app) {
     const prev = ctx.path
     const newPath = match(prev)
     debug('mount %s %s -> %s', prefix, name, newPath)
-    if (!newPath) return await upstream()
+    if (!newPath) return upstream()
 
     ctx.mountPath = prefix
     ctx.path = newPath
