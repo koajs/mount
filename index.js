@@ -33,9 +33,12 @@ function mount (prefix, app) {
   assert.equal(prefix[0], '/', 'mount path must begin with "/"')
 
   // compose
-  const downstream = app.middleware
-    ? compose(app.middleware)
-    : app
+  let downstream = app  
+  if (Array.isArray(app)) {
+    downstream = compose(app)
+  } else if (app.middleware) {
+    downstream = compose(app.middleware)
+  }
 
   // don't need to do mounting here
   if (prefix === '/') return downstream

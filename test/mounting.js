@@ -268,6 +268,30 @@ describe('mount(path, app)', function () {
   })
 })
 
+describe('mount(app, middleware)', function () {
+  it('should mount the app', async () => {
+    const calls = []
+    const app = new Koa()
+    app.use(mount([
+      async (ctx, next) => {
+        calls.push(1)
+        await next()
+      },
+      async (ctx, next) => {
+        calls.push(2)
+        ctx.body = 'Hello World'
+      }
+    ]))
+
+    await request(app.listen())
+    .get('/')
+    .expect('Hello World')
+    .expect(200)
+
+    calls.should.deepEqual([1, 2])
+  })
+})
+
 describe('mount(/prefix)', function () {
   var app = new Koa()
 
