@@ -1,9 +1,0 @@
-node_js:
-- 12
-- 14
-- 16
-language: node_js
-script:
-  - npm run lint
-  - npm run test-travis
-after_script: "npm install coveralls@2.10.0 && cat ./coverage/lcov.info | coveralls"
