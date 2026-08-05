@@ -32,8 +32,8 @@
     "lint": "xo",
     "lint:fix": "xo --fix",
     "pretest": "npm run lint",
-    "test": "node --test test/*.test.js --exit",
-    "test-ci": "c8 npm run test --reporter=lcov",
+    "test": "node --test test/*.test.js --test-force-exit",
+    "test-ci": "c8 --reporter=lcov npm run test",
     "prepublishOnly": "npm run build"
   },
   "engines": {

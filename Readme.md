@@ -107,11 +107,11 @@ app.use(mount(b));
 
 ## Debugging
 
-Use the **DEBUG** environement variable to whitelist
+Use the **NODE_DEBUG** environment variable to whitelist
 koa-mount debug output:
 
 ```
-$ DEBUG=koa-mount node myapp.js &
+$ NODE_DEBUG=koa-mount node myapp.js &
 $ GET /foo/bar/baz
 
   koa-mount enter /foo/bar/baz -> /bar/baz +2s
