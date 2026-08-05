@@ -16,14 +16,12 @@
     "koa-compose": "^4.1.0"
   },
   "devDependencies": {
+    "c8": "^12.0.0",
     "eslint-config-xo-lass": "^2.0.1",
     "husky": "^9.1.7",
-    "koa": "^3.0.0",
+    "koa": "^3.2.1",
     "koa-static": "^5.0.0",
-    "mocha": "^11.5.0",
-    "nyc": "^17.1.0",
-    "should": "^13.2.3",
-    "supertest": "^7.1.1",
+    "supertest": "^7.2.2",
     "xo": "^0.60.0"
   },
   "peerDependencies": {
@@ -34,11 +32,11 @@
     "lint": "xo",
     "lint:fix": "xo --fix",
     "pretest": "npm run lint",
-    "test": "mocha --exit",
-    "test-ci": "nyc npm run test --reporter=lcov",
+    "test": "node --test test/*.test.js --exit",
+    "test-ci": "c8 npm run test --reporter=lcov",
     "prepublishOnly": "npm run build"
   },
   "engines": {
-    "node": ">= 18"
+    "node": ">=22"
   }
 }

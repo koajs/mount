@@ -1,4 +1,6 @@
 const path = require('node:path');
+const { describe, it, before, after } = require('node:test');
+const assert = require('node:assert');
 
 const supertest = require('supertest');
 const serve = require('koa-static');
@@ -8,19 +10,30 @@ const mount = require('..');
 
 const root = path.resolve(__dirname, '..');
 
-const app = new Koa();
-
-app.use(mount('/examples', serve(path.resolve(root, 'examples'))));
-app.use(mount('/test', serve(path.resolve(root, 'test'))));
-
-const request = supertest.agent(app.listen());
 
 describe('Acceptance: Multiple Mounts', () => {
-  it('should serve /examples', async () => {
-    await request.get('/examples/cascade.js').expect(200);
+  let server;
+  let request;
+
+  before(() => {
+    const app = new Koa();
+
+    app.use(mount('/examples', serve(path.join(root, 'examples'))));
+    app.use(mount('/test', serve(path.join(root, 'test'))));
+
+    server = app.listen();
+    request = supertest(server);
   });
 
-  it('should serve /test', async () => {
-    await request.get('/test/errors.js').expect(200);
+  after(() => server.close());
+
+  it('serves examples', async () => {
+    const response = await request.get('/examples/cascade.js');
+    assert.strictEqual(response.status, 200);
+  });
+
+  it('serves test', async () => {
+    const response = await request.get('/test/errors.js');
+    assert.strictEqual(response.status, 200);
   });
 });

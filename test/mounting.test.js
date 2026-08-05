@@ -1,10 +1,11 @@
 'use strict';
 
+const { describe, it, before, after } = require('node:test');
+const assert = require('node:assert');
+
 const request = require('supertest');
 const mount = require('..');
 const Koa = require('koa');
-
-require('should');
 
 describe('mount(app)', () => {
   it('should mount at /', async () => {
@@ -25,9 +26,11 @@ describe('mount(app)', () => {
     app.use(mount(a));
     app.use(mount(b));
 
-    await request(app.listen()).get('/').expect(404);
-    await request(app.listen()).get('/hello').expect('Hello');
-    await request(app.listen()).get('/world').expect('World');
+    const server = app.listen();
+    await request(server).get('/').expect(404);
+    await request(server).get('/hello').expect('Hello');
+    await request(server).get('/world').expect('World');
+    server.close();
   });
 });
 
@@ -50,9 +53,11 @@ describe('mount(path, app)', () => {
     app.use(mount('/hello', a));
     app.use(mount('/world', b));
 
-    await request(app.listen()).get('/hello').expect('Hello');
-    await request(app.listen()).get('/world').expect('World');
-    await request(app.listen()).get('/').expect(404);
+    const server = app.listen();
+    await request(server).get('/hello').expect('Hello');
+    await request(server).get('/world').expect('World');
+    await request(server).get('/').expect(404);
+    server.close();
   });
 
   it('should cascade properly', async () => {
@@ -80,10 +85,12 @@ describe('mount(path, app)', () => {
     a.use(mount('/bar', b));
     b.use(mount('/baz', c));
 
-    await request(app.listen()).get('/').expect(404);
-    await request(app.listen()).get('/foo').expect('foo');
-    await request(app.listen()).get('/foo/bar').expect('bar');
-    await request(app.listen()).get('/foo/bar/baz').expect('baz');
+    const server = app.listen();
+    await request(server).get('/').expect(404);
+    await request(server).get('/foo').expect('foo');
+    await request(server).get('/foo/bar').expect('bar');
+    await request(server).get('/foo/bar/baz').expect('baz');
+    server.close();
   });
 
   it('should restore prefix for mounted apps', async () => {
@@ -111,7 +118,9 @@ describe('mount(path, app)', () => {
     app.use(mount('/foo/bar', b));
     app.use(mount('/foo/bar/baz', c));
 
-    await request(app.listen()).get('/foo/bar').expect('bar');
+    const server = app.listen();
+    await request(server).get('/foo/bar').expect('bar');
+    server.close();
   });
 
   it('should restore prefix for mounted middleware', async () => {
@@ -121,24 +130,26 @@ describe('mount(path, app)', () => {
       mount('/foo', async function (ctx, next) {
         ctx.body = 'foo';
         await next();
-      })
+      }),
     );
 
     app.use(
       mount('/foo/bar', async function (ctx, next) {
         ctx.body = 'bar';
         await next();
-      })
+      }),
     );
 
     app.use(
       mount('/foo/bar/baz', async function (ctx, next) {
         ctx.body = 'baz';
         await next();
-      })
+      }),
     );
 
-    await request(app.listen()).get('/foo/bar').expect('bar');
+    const server = app.listen();
+    await request(server).get('/foo/bar').expect('bar');
+    server.close();
   });
 
   it('should have the correct path', async () => {
@@ -146,20 +157,22 @@ describe('mount(path, app)', () => {
     const a = new Koa();
 
     a.use(async function (ctx, next) {
-      ctx.path.should.equal('/');
+      assert.strictEqual(ctx.path, '/');
       await next();
-      ctx.path.should.equal('/');
+      assert.strictEqual(ctx.path, '/');
     });
 
     app.use(async function (ctx, next) {
-      ctx.path.should.equal('/foo');
+      assert.strictEqual(ctx.path, '/foo');
       await next();
-      ctx.path.should.equal('/foo');
+      assert.strictEqual(ctx.path, '/foo');
     });
 
     app.use(mount('/foo', a));
 
-    await request(app.listen()).get('/foo');
+    const server = app.listen();
+    await request(server).get('/foo');
+    server.close();
   });
 
   describe('when errors occur', () => {
@@ -168,22 +181,25 @@ describe('mount(path, app)', () => {
       const a = new Koa();
 
       a.use(async function (ctx) {
-        ctx.path.should.equal('/');
+        assert.strictEqual(ctx.path, '/');
         return ctx.throw(403, 'Forbidden');
       });
 
       app.use(async function (ctx, next) {
-        ctx.path.should.equal('/foo');
+        assert.strictEqual(ctx.path, '/foo');
+
         try {
           await next();
         } catch (err) {
-          ctx.path.should.equal('/foo');
+          assert.strictEqual(ctx.path, '/foo');
         }
       });
 
       app.use(mount('/foo', a));
 
-      await request(app.listen()).get('/foo');
+      const server = app.listen();
+      await request(server).get('/foo');
+      server.close();
     });
   });
 
@@ -204,8 +220,10 @@ describe('mount(path, app)', () => {
       app.use(mount('/hello', hello));
       app.use(mount('/world', world));
 
-      await request(app.listen()).get('/hello').expect('Hello');
-      await request(app.listen()).get('/world').expect('World');
+      const server = app.listen();
+      await request(server).get('/hello').expect('Hello');
+      await request(server).get('/world').expect('World');
+      server.close();
     });
   });
 });
@@ -224,25 +242,32 @@ describe('mount(app, middleware)', () => {
           calls.push(2);
           ctx.body = 'Hello World';
         },
-      ])
+      ]),
     );
 
-    await request(app.listen()).get('/').expect('Hello World').expect(200);
+    const server = app.listen();
+    await request(server).get('/').expect('Hello World').expect(200);
+    server.close();
 
-    calls.should.deepEqual([1, 2]);
+    assert.deepStrictEqual(calls, [1, 2]);
   });
 });
 
 describe('mount(/prefix)', () => {
   const app = new Koa();
+  let server;
+
+  before(() => {
+    server = app.listen();
+  });
+
+  after(() => server?.close());
 
   app.use(
     mount('/prefix', function (ctx) {
       ctx.status = 204;
-    })
+    }),
   );
-
-  const server = app.listen();
 
   it('should not match /kljasdf', async () => {
     await request(server).get('/kljasdf').expect(404);
@@ -266,15 +291,21 @@ describe('mount(/prefix)', () => {
 });
 
 describe('mount(/prefix/)', () => {
-  const app = new Koa();
+  let server;
 
-  app.use(
-    mount('/prefix/', function (ctx) {
-      ctx.status = 204;
-    })
-  );
+  before(() => {
+    const app = new Koa();
 
-  const server = app.listen();
+    app.use(
+      mount('/prefix/', function (ctx) {
+        ctx.status = 204;
+      }),
+    );
+
+    server = app.listen();
+  });
+
+  after(() => server?.close());
 
   it('should not match /kljasdf', async () => {
     await request(server).get('/kljasdf').expect(404);
@@ -304,24 +335,29 @@ describe('mount(/prefix) multiple', () => {
     mount('/a', async (ctx) => {
       ctx.assert.equal('/a', ctx.path, 404);
       ctx.status = 204;
-    })
+    }),
   );
 
   app.use(
     mount('/b', async (ctx) => {
       ctx.assert.equal('/b', ctx.path, 404);
       ctx.status = 204;
-    })
+    }),
   );
 
   app.use(
     mount('/c', async (ctx) => {
       ctx.assert.equal('/c', ctx.path, 404);
       ctx.status = 204;
-    })
+    }),
   );
 
-  const server = app.listen();
+  let server;
+  before(() => {
+    server = app.listen();
+  });
+
+  after(() => server?.close());
 
   it('should serve all the right mounted paths', async () => {
     await request(server).get('/a/a').expect(204);
