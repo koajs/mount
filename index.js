@@ -1,17 +1,18 @@
-
 /**
  * Module dependencies.
  */
 
-const debug = require('debug')('koa-mount')
-const compose = require('koa-compose')
-const assert = require('assert')
+const util = require('node:util');
+const assert = require('node:assert');
+const compose = require('koa-compose');
+
+const debug = util.debuglog('koa-mount');
 
 /**
  * Expose `mount()`.
  */
 
-module.exports = mount
+module.exports = mount;
 
 /**
  * Mount `app` with `prefix`, `app`
@@ -24,51 +25,51 @@ module.exports = mount
  * @api public
  */
 
-function mount (prefix, app) {
+function mount(prefix, app) {
   if (typeof prefix !== 'string') {
-    app = prefix
-    prefix = '/'
+    app = prefix;
+    prefix = '/';
   }
 
-  assert.equal(prefix[0], '/', 'mount path must begin with "/"')
+  assert.equal(prefix[0], '/', 'mount path must begin with "/"');
 
   // compose
-  let downstream = app  
+  let downstream = app;
   if (Array.isArray(app)) {
-    downstream = compose(app)
+    downstream = compose(app);
   } else if (app.middleware) {
-    downstream = compose(app.middleware)
+    downstream = compose(app.middleware);
   }
 
   // don't need to do mounting here
-  if (prefix === '/') return downstream
+  if (prefix === '/') return downstream;
 
-  const trailingSlash = prefix.slice(-1) === '/'
+  const trailingSlash = prefix.slice(-1) === '/';
 
-  const name = app.name || 'unnamed'
-  debug('mount %s %s', prefix, name)
+  const name = app.name || 'unnamed';
+  debug('mount %s %s', prefix, name);
 
   return async function (ctx, upstream) {
-    const prev = ctx.path
-    const newPath = match(prev)
-    debug('mount %s %s -> %s', prefix, name, newPath)
-    if (!newPath) return await upstream()
+    const prev = ctx.path;
+    const newPath = match(prev);
+    debug('mount %s %s -> %s', prefix, name, newPath);
+    if (!newPath) return upstream();
 
-    ctx.mountPath = prefix
-    ctx.path = newPath
-    debug('enter %s -> %s', prev, ctx.path)
+    ctx.mountPath = prefix;
+    ctx.path = newPath;
+    debug('enter %s -> %s', prev, ctx.path);
 
     try {
       await downstream(ctx, async () => {
-        ctx.path = prev
-        await upstream()
-        ctx.path = newPath
-      })
+        ctx.path = prev;
+        await upstream();
+        ctx.path = newPath;
+      });
     } finally {
-      debug('leave %s -> %s', prev, ctx.path)
-      ctx.path = prev
+      debug('leave %s -> %s', prev, ctx.path);
+      ctx.path = prev;
     }
-  }
+  };
 
   /**
    * Check if `prefix` satisfies a `path`.
@@ -85,15 +86,15 @@ function mount (prefix, app) {
    * @api private
    */
 
-  function match (path) {
+  function match(path) {
     // does not match prefix at all
-    if (path.indexOf(prefix) !== 0) return false
+    if (path.indexOf(prefix) !== 0) return false;
 
-    const newPath = path.replace(prefix, '') || '/'
-    if (trailingSlash) return newPath
+    const newPath = path.replace(prefix, '') || '/';
+    if (trailingSlash) return newPath;
 
     // `/mount` does not match `/mountlkjalskjdf`
-    if (newPath[0] !== '/') return false
-    return newPath
+    if (newPath[0] !== '/') return false;
+    return newPath;
   }
 }

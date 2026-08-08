@@ -1,0 +1,11 @@
+{
+  "prettier": true,
+  "space": true,
+  "extends": [
+    "xo-lass"
+  ],
+  "ignores": [
+    "test/**",
+    "examples/**"
+  ]
+}
