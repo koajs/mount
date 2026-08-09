@@ -21,6 +21,7 @@
     "husky": "^9.1.7",
     "koa": "^3.2.1",
     "koa-static": "^5.0.0",
+    "np": "^12.0.1",
     "supertest": "^7.2.2",
     "xo": "^0.60.0"
   },
@@ -34,7 +35,8 @@
     "pretest": "npm run lint",
     "test": "node --test test/*.test.js --test-force-exit",
     "test-ci": "c8 --reporter=lcov npm run test",
-    "prepublishOnly": "npm run build"
+    "prepublishOnly": "npm run build",
+    "release": "np"
   },
   "engines": {
     "node": ">=22"
